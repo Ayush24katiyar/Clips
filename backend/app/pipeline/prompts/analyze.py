@@ -8,9 +8,14 @@ in-point decide views; effects do not. Prefer:
 - durations near the requested maximum only when the material is a continuous argument or laughter
 
 Never invent quotes. Every title must be traceable to the transcript.
-Return ONLY valid JSON matching the requested schema."""
+Return ONLY a JSON object with one key "clips" whose value is an array of objects.
+Each object must have exactly these keys: start (number), end (number), score (number),
+reason (string), title (string), description (string). No markdown, no commentary."""
 
-ANALYZE_USER = """Select {clip_count} clips from the transcript below.
+ANALYZE_USER = """Select exactly {clip_count} clips from the transcript below.
+
+Output format: {{"clips": [{{"start": 12.5, "end": 40.0, "score": 75,
+"reason": "...", "title": "...", "description": "..."}}]}}
 
 Rules:
 - each clip between {min_seconds} and {max_seconds} seconds

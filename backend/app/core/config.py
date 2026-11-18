@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     ai_provider: str = "groq"
     groq_api_key: str = ""
     groq_transcribe_model: str = "whisper-large-v3-turbo"
-    groq_text_model: str = "gpt-oss-20b"
+    groq_text_model: str = "openai/gpt-oss-20b"
     groq_vision_model: str = "qwen/qwen3.8-27b"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:3b"

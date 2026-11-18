@@ -11,7 +11,7 @@ from .ffmpeg_service import extract_frame
 
 class ThumbnailService:
     def generate(self, clip_id: str, video: Path, frame_time: float, title: str) -> Path:
-        raw = settings.storage_path("thumbs") / f"{clip_id}_raw.jpg"
+        raw = settings.storage_path("thumbs") / f"{clip_id}_raw.png"
         extract_frame(video, raw, frame_time)
         image = Image.open(raw).convert("RGB")
 

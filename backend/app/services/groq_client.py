@@ -31,7 +31,10 @@ class GroqProvider:
                 return await call(*args, **kwargs)
             except Exception as exc:
                 status = getattr(exc, "status_code", 0)
-                if status not in (429, 500, 502, 503, 504) or attempt == MAX_RETRIES - 1:
+                retryable = status in (429, 500, 502, 503, 504) or (
+                    status == 400 and "json_validate_failed" in str(exc)
+                )
+                if not retryable or attempt == MAX_RETRIES - 1:
                     raise ProviderError(f"Groq request failed: {exc}") from exc
                 await asyncio.sleep(min(2**attempt, 20))
         raise ProviderError("Groq retries exhausted")
@@ -60,6 +63,8 @@ class GroqProvider:
             ],
             response_format={"type": "json_object"},
             temperature=0.2,
+            max_completion_tokens=4096,
+            reasoning_effort="low",
         )
         content = response.choices[0].message.content
         if not content:

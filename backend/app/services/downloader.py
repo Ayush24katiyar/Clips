@@ -26,6 +26,7 @@ class Downloader:
         output = source_path(source_id)
         command = [
             "yt-dlp",
+            "--js-runtimes", "node",
             "--no-playlist",
             "-f",
             f"bestvideo[height<={max_height}]+bestaudio/best[height<={max_height}]/best",

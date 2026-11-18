@@ -58,8 +58,8 @@ def extract_frame(source: Path, output: Path, at: float) -> Path:
             str(source),
             "-frames:v",
             "1",
-            "-q:v",
-            "2",
+            "-update",
+            "1",
             str(output),
         ]
     )
@@ -136,7 +136,7 @@ def render_clip(
     if ass_path is not None:
         filters.append(f"subtitles={ass_path.as_posix()}")
     filters.append(f"fps={settings.output_fps}")
-    filters.append(f"loudnorm=I={settings.loudness_target}:TP=-1:LRA=11")
+    audio_filter = f"loudnorm=I={settings.loudness_target}:TP=-1:LRA=11"
 
     run(
         [
@@ -150,6 +150,8 @@ def render_clip(
             f"{duration:.3f}",
             "-vf",
             ",".join(filters),
+            "-af",
+            audio_filter,
             "-c:v",
             "libx264",
             "-preset",

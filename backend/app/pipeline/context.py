@@ -14,6 +14,7 @@ class JobContext:
     url: str
     quality_mode: str = "visually_lossless"
     ratio: str = "9:16"
+    source_height: int = 2160
     clip_count: int = 7
     clip_min_seconds: float = 15.0
     clip_max_seconds: float = 90.0

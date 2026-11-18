@@ -35,7 +35,7 @@ Consequence: our scoring and `select` stage optimise in-point and content; packa
 
 - `whisper-large-v3-turbo`: **$0.04/hour**, multilingual, `verbose_json` with `timestamp_granularities=["word","segment"]` → word-level captions. `whisper-large-v3`: $0.111/hour, ~10.3% WER.
 - Limits: 25 MB free / 100 MB dev per audio file → chunk long videos (Groq cookbook pattern: overlapping segments, stitch with offset-adjusted timestamps). Free tier ≈ 20 RPM / 2000 RPD for Whisper → backoff + cache.
-- Text: `gpt-oss-20b` (~1000 t/s, $0.075 in/$0.30 out per 1M) or `gpt-oss-120b` (~500 t/s, $0.15/$0.60); JSON mode. `qwen/qwen3.8-27b` for vision (3 images/request, 20 MB, JSON mode).
+- Text: `openai/gpt-oss-20b` (~1000 t/s, $0.075 in/$0.30 out per 1M) or `openai/gpt-oss-120b` (~500 t/s, $0.15/$0.60); JSON mode. `qwen/qwen3.8-27b` for vision (3 images/request, 20 MB, JSON mode). Full model IDs with prefixes are required.
 - `llama-3.1-8b-instant` / `llama-3.3-70b-versatile` are Enterprise/ContactSales in the current model list — not assumed available.
 - Advantage: ~$0.05 per hour-long video, zero local VRAM for AI; RTX 3050 free for encode/face-tracking.
 

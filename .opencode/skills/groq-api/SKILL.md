@@ -11,8 +11,8 @@ All calls go through `backend/app/services/groq_client.py`. Key from `.env` only
 
 - `whisper-large-v3-turbo` — $0.04/audio-hour, multilingual, translation unsupported. Use for transcription.
 - `whisper-large-v3` — $0.111/audio-hour, ~10.3% WER; use for error-sensitive work/translation.
-- `gpt-oss-20b` — ~1000 tok/s, $0.075 in / $0.30 out per 1M. Default text model.
-- `gpt-oss-120b` — ~500 tok/s, $0.15 in / $0.60 out per 1M. Upgrade for hard prompts.
+- `openai/gpt-oss-20b` — ~1000 tok/s, $0.075 in / $0.30 out per 1M. Default text model (full ID with prefix required).
+- `openai/gpt-oss-120b` — ~500 tok/s, $0.15 in / $0.60 out per 1M. Upgrade for hard prompts.
 - `qwen/qwen3.8-27b` — vision, up to 3 images/request, 20 MB each, JSON mode.
 - `llama-3.1-8b-instant` / `llama-3.3-70b-versatile` are Enterprise/ContactSales — do not assume access.
 

@@ -6,6 +6,7 @@ export interface CreateJobPayload {
   url: string;
   quality_mode: QualityMode;
   ratio: string;
+  source_height?: number;
   clip_count: number;
   burn_captions: boolean;
   generate_thumbnail: boolean;

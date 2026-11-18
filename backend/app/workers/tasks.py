@@ -52,7 +52,6 @@ def process_job(self, job_payload: dict) -> list[dict]:
             JobController(db).mark_failed(ctx.job_id, str(exc))
         finally:
             db.close()
-        self.update_state(state="FAILURE", meta={"error": str(exc)})
         raise
 
     db: Session = SessionLocal()

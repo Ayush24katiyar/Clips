@@ -47,6 +47,7 @@ def new_context(url: str, params: dict[str, object] | None = None) -> JobContext
         url=url,
         quality_mode=str(params.get("quality_mode", settings.default_quality_mode)),
         ratio=str(params.get("ratio", settings.default_ratio)),
+        source_height=int(params.get("source_height", 2160)),
         clip_count=int(params.get("clip_count", 7)),
         clip_min_seconds=float(params.get("clip_min_seconds", 15)),
         clip_max_seconds=float(params.get("clip_max_seconds", 90)),

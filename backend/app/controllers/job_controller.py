@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -16,7 +17,9 @@ class JobController:
     def create(self, payload: CreateJobRequest) -> Job:
         from ..workers.tasks import process_job  # lazy: avoids controller/worker circular import
 
-        source = Source(
+        source_id = hashlib.sha256(str(payload.url).encode()).hexdigest()[:32]
+        source = self.db.get(Source, source_id) or Source(
+            id=source_id,
             url=str(payload.url),
             platform="youtube",
             title="",
@@ -36,6 +39,7 @@ class JobController:
             "url": str(payload.url),
             "quality_mode": payload.quality_mode,
             "ratio": payload.ratio,
+            "source_height": payload.source_height,
             "clip_count": payload.clip_count,
             "clip_min_seconds": payload.clip_min_seconds,
             "clip_max_seconds": payload.clip_max_seconds,

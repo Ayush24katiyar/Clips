@@ -15,7 +15,8 @@ async def run(ctx: JobContext, progress: ProgressFn) -> JobContext:
     for index, item in enumerate(ctx.rendered, 1):
         clip_id = f"{ctx.job_id}_{index:02d}"
         candidate = item["candidate"]
-        frame = float(candidate["start"]) + min(1.5, (float(candidate["end"]) - float(candidate["start"])) / 3)
+        duration = float(candidate["end"]) - float(candidate["start"])
+        frame = min(1.5, duration / 3)
         output = service.generate(
             clip_id,
             Path(str(item["path"])),
