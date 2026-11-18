@@ -1,0 +1,64 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+coverage/
+.coverage
+htmlcov/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+npm-debug.log*
+
+# Secrets & local state
+.env
+.env.*
+!.env.example
+*.pem
+*.token
+*.key
+*.kdbx
+cookies*.txt
+.credentials/
+.creds/
+client_secret*.json
+*_token.json
+
+# Media (generated)
+storage/sources/*
+storage/clips/*
+storage/thumbs/*
+storage/captions/*
+storage/exports/*
+!storage/*/.gitkeep
+*.mp4
+*.mkv
+*.mov
+*.webm
+*.m4v
+*.part
+*.ytdl
+*.flac
+*.wav
+*.mp3
+*.srt
+*.vtt
+*.ass
+*.info.json
+
+# OS / editor / logs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.log
