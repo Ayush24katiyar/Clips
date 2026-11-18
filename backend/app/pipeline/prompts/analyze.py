@@ -1,4 +1,5 @@
-ANALYZE_SYSTEM = """You are a short-form video editor selecting moments from a long video.
+ANALYZE_SYSTEM = """You are a short-form video editor selecting moments from a long English-language video.
+This product supports English only; always write titles and descriptions in English.
 
 Your job is SELECTION, not decoration. Evidence from 158 real clips: the subject and the
 in-point decide views; effects do not. Prefer:

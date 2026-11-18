@@ -19,6 +19,7 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
     queryFn: () => api.getJob(id),
     enabled: Boolean(id),
     refetchInterval: 3000,
+    refetchIntervalInBackground: true,
   });
 
   const clipsQuery = useQuery({
@@ -26,6 +27,7 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
     queryFn: () => api.listClips(id),
     enabled: Boolean(id),
     refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 
   useEffect(() => {
@@ -54,6 +56,15 @@ export default function JobPage({ params }: { params: Promise<{ id: string }> })
         stage={live.stage || job?.stage || "queued"}
         percent={live.percent || job?.progress || 0}
       />
+
+      {job?.status === "failed" && (
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          <strong>Job failed:</strong> {job.error || "Unknown error"}
+        </div>
+      )}
+      {job?.status === "succeeded" && (
+        <p className="text-sm text-emerald-400">Done — {clips.length} clips ready.</p>
+      )}
 
       {clips.length > 0 && (
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
