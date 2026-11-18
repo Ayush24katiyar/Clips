@@ -33,12 +33,9 @@ cookies*.txt
 client_secret*.json
 *_token.json
 
-# Media (generated)
-storage/sources/*
-storage/clips/*
-storage/thumbs/*
-storage/captions/*
-storage/exports/*
+# Media (generated) — ignore everything under storage except the .gitkeep markers
+storage/**
+!storage/**/
 !storage/*/.gitkeep
 *.mp4
 *.mkv
