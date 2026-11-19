@@ -1,6 +1,6 @@
 "use client";
 
-import type { Clip } from "@/lib/api";
+import { api, type Clip } from "@/lib/api";
 
 export function ClipCard({ clip }: { clip: Clip }) {
   return (
@@ -9,7 +9,7 @@ export function ClipCard({ clip }: { clip: Clip }) {
         {clip.thumbnail_path ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={clip.thumbnail_path}
+            src={api.mediaUrl(clip.thumbnail_path)}
             alt={clip.title}
             className="h-full w-full object-cover"
           />
@@ -31,7 +31,7 @@ export function ClipCard({ clip }: { clip: Clip }) {
           {clip.start.toFixed(1)}s – {clip.end.toFixed(1)}s
         </p>
         <a
-          href={clip.file_path}
+          href={api.mediaUrl(clip.file_path)}
           className="inline-block rounded bg-white/10 px-3 py-1.5 text-xs hover:bg-white/20"
         >
           Download MP4

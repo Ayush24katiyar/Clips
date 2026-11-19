@@ -18,6 +18,12 @@ class Settings(BaseSettings):
     ai_provider: str = "groq"
     groq_api_key: str = ""
     groq_transcribe_model: str = "whisper-large-v3-turbo"
+    # Groq's free tier allows 25 MB per audio request; 10-min 16 kHz FLAC chunks stay well under.
+    groq_audio_max_bytes: int = 20 * 1024 * 1024
+    groq_audio_chunk_seconds: int = 600
+    groq_audio_chunk_overlap: float = 3.0
+    # Free-tier TPM is 8000; cap the analysis prompt to ~550 timestamped words.
+    groq_analysis_max_words: int = 500
     groq_text_model: str = "openai/gpt-oss-20b"
     groq_vision_model: str = "qwen/qwen3.8-27b"
     ollama_base_url: str = "http://localhost:11434"
@@ -34,6 +40,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://clipforge:clipforge@db:5432/clipforge"
     redis_url: str = "redis://redis:6379/0"
     storage_root: Path = Path("storage")
+
+    # Optional browser-session cookies for public videos the user is viewing.
+    youtube_cookies_file: str = ""
 
     # Media binaries (set to absolute paths if not on PATH)
     ffmpeg_bin: str = "ffmpeg"

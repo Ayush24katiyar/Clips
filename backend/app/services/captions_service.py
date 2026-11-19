@@ -14,7 +14,13 @@ def _ts(seconds: float) -> str:
 
 
 class CaptionsService:
-    def write_all(self, transcript: Transcript, clip: ClipCandidate, directory: Path) -> dict[str, Path]:
+    def write_all(
+        self,
+        transcript: Transcript,
+        clip: ClipCandidate,
+        directory: Path,
+        hook_text: str | None = None,
+    ) -> dict[str, Path]:
         words = transcript.words_between(clip.start, clip.end)
         if not words:
             return {}
@@ -23,7 +29,7 @@ class CaptionsService:
         return {
             "srt": self._write_srt(words, clip.start, base.with_suffix(".srt")),
             "vtt": self._write_vtt(words, clip.start, base.with_suffix(".vtt")),
-            "ass": self._write_ass(words, clip.start, base.with_suffix(".ass")),
+            "ass": self._write_ass(words, clip.start, base.with_suffix(".ass"), hook_text),
         }
 
     def _write_srt(self, words: list, offset: float, path: Path) -> Path:
@@ -49,7 +55,7 @@ class CaptionsService:
         path.write_text("\n".join(lines), encoding="utf-8")
         return path
 
-    def _write_ass(self, words: list, offset: float, path: Path) -> Path:
+    def _write_ass(self, words: list, offset: float, path: Path, hook_text: str | None = None) -> Path:
         header = (
             "[Script Info]\n"
             "ScriptType: v4.00+\n"
@@ -61,11 +67,19 @@ class CaptionsService:
             "Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, "
             "Bold, Alignment, MarginL, MarginR, MarginV, Encoding\n"
             "Style: Default,Arial,72,&H00FFFFFF,&H00000000,&H80000000,-1,2,60,60,240,1\n"
+            "Style: Hook,Arial,88,&H00FFFFFF,&H00000000,&H90000000,-1,2,60,60,760,1\n"
             "\n"
             "[Events]\n"
             "Format: Layer, Start, End, Style, Text\n"
         )
         lines = [header]
+        if hook_text:
+            clean = " ".join(hook_text.split()).replace("{", "(").replace("}", ")")
+            clean = clean.replace(",", " ")[:80]
+            lines.append(
+                "Dialogue: 1,0:00:00.00,0:00:01.50,Hook,"
+                f"{{\\b1\\fs88}}{clean}"
+            )
         for word in words:
             start = self._ass_ts(word.start - offset)
             end = self._ass_ts(word.end - offset)

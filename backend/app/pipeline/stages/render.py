@@ -20,7 +20,9 @@ async def run(ctx: JobContext, progress: ProgressFn) -> JobContext:
         output = directory / f"clip_{index:02d}.mp4"
         ass_path = None
         if ctx.burn_captions and ctx.transcript is not None:
-            paths = CaptionsService().write_all(ctx.transcript, clip, directory)
+            paths = CaptionsService().write_all(
+                ctx.transcript, clip, directory, hook_text=clip.title or clip.reason
+            )
             ass_path = paths.get("ass")
 
         await progress("render", int(index / total * 90), f"Rendering clip {index}/{total}")
@@ -33,6 +35,7 @@ async def run(ctx: JobContext, progress: ProgressFn) -> JobContext:
             width=width,
             height=height,
             ass_path=ass_path,
+            reframe=ctx.reframe,
         )
         if ctx.quality_mode == "visually_lossless":
             validate_output(output, clip.end - clip.start)

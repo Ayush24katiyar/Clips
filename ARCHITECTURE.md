@@ -18,7 +18,9 @@ Services in `docker-compose.yml`: `frontend`, `api`, `worker`, `redis`, `db`.
 ## Pipeline (Celery job)
 
 ```
-1. ingest      yt-dlp best format (≤4K, cookies) → ffprobe metadata
+1. ingest      yt-dlp best format (≤4K, optional cookies) → ffprobe metadata
+               `source_max_seconds` (0 = full) samples only the first N seconds of long streams;
+               duration is clamped so downstream stages stay inside the sampled chunk.
 2. transcribe  extract 16kHz mono FLAC → chunk → Groq whisper-large-v3-turbo
                (verbose_json, word + segment timestamps) → merge offsets
 3. analyze     Groq gpt-oss-20b JSON: candidate moments, virality score, titles

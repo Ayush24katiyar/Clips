@@ -28,7 +28,13 @@ A 16:9 4K source (3840×2160) contains only ~1215×2160 pixels of vertical frame
 | `1440x2560` vertical | upscaled; only if user explicitly accepts |
 | `2560x1440` / `3840x2160` widescreen | native, no upscale |
 
-Never stretch. Face-tracked crop with deadzone + smoothing; letterbox when no subject.
+Never stretch. Two `reframe` modes are available:
+- `crop` (default) — face/center crop to fill the vertical frame.
+- `letterbox` — full 16:9 frame over a blurred fill, preserving gameplay UI and facecam;
+  recommended for gaming streams where cropping would cut off important screen content.
+
+Every clip also carries a 1.5 s hook text overlay burned into the ASS captions, written from
+the clip title so it stays traceable to the transcript.
 
 ## Mandatory output properties
 

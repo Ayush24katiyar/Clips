@@ -6,28 +6,41 @@ from ..context import JobContext, ProgressFn
 
 
 async def run(ctx: JobContext, progress: ProgressFn) -> JobContext:
-    if not ctx.candidates:
-        # Last-resort deterministic windows so a job never dies here.
-        duration = ctx.source_duration or 0
-        if duration <= ctx.clip_min_seconds:
-            raise AnalysisError("Source is too short to produce a clip")
+    duration = ctx.source_duration or 0
+    if duration <= ctx.clip_min_seconds:
+        raise AnalysisError("Source is too short to produce a clip")
+
+    valid = [
+        clip
+        for clip in ctx.candidates
+        if 0 <= clip.start < clip.end <= duration
+    ]
+    valid = sorted(valid, key=lambda c: c.score, reverse=True)[: ctx.clip_count]
+
+    # Always deliver the requested number of clips. Fill any gap with windows
+    # spread across the whole source, skipping spots already covered.
+    if len(valid) < ctx.clip_count:
         span = min(ctx.clip_max_seconds, duration)
-        ctx.candidates = [
-            ClipCandidate(
-                start=float(i * duration / ctx.clip_count),
-                end=float(min(i * duration / ctx.clip_count + span, duration)),
-                score=50.0,
-                reason="Automatic even-spacing fallback",
-                title=f"Clip {i + 1}",
-                description="Automatically selected segment.",
+        for i in range(ctx.clip_count):
+            start = i * (duration - span) / max(ctx.clip_count - 1, 1)
+            end = min(start + span, duration)
+            overlap = any(
+                start < c.end and end > c.start for c in valid
             )
-            for i in range(ctx.clip_count)
-        ]
-    # Re-rank and clamp to source duration; in-point refinement at visual peaks
-    # is added in Phase 2 (face/audio signal fusion).
-    valid = [clip for clip in ctx.candidates if 0 <= clip.start < clip.end <= (ctx.source_duration or clip.end)]
-    if not valid:
-        valid = ctx.candidates
-    ctx.candidates = sorted(valid, key=lambda c: c.score, reverse=True)[: ctx.clip_count]
+            if not overlap:
+                valid.append(
+                    ClipCandidate(
+                        start=float(start),
+                        end=float(end),
+                        score=50.0,
+                        reason="Automatic even-spacing fallback",
+                        title=f"Clip {len(valid) + 1}",
+                        description="Automatically selected segment.",
+                    )
+                )
+            if len(valid) >= ctx.clip_count:
+                break
+
+    ctx.candidates = valid
     await progress("select", 100, f"Selected {len(ctx.candidates)} clips")
     return ctx

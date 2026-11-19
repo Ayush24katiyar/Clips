@@ -13,6 +13,8 @@ export default function StudioPage() {
     url: "",
     quality_mode: "visually_lossless",
     ratio: "9:16",
+    reframe: "crop",
+    source_max_seconds: 1800,
     clip_count: 7,
     burn_captions: true,
     generate_thumbnail: true,
@@ -73,6 +75,36 @@ export default function StudioPage() {
             max={20}
             value={payload.clip_count}
             onChange={(event) => setPayload({ ...payload, clip_count: Number(event.target.value) })}
+            className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium" htmlFor="reframe">Reframe</label>
+          <select
+            id="reframe"
+            value={payload.reframe}
+            onChange={(event) =>
+              setPayload({ ...payload, reframe: event.target.value as "crop" | "letterbox" })
+            }
+            className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+          >
+            <option value="crop">Crop — face / center</option>
+            <option value="letterbox">Letterbox — full frame (gaming)</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-sm font-medium" htmlFor="maxseconds">
+            Max source seconds (0 = full)
+          </label>
+          <input
+            id="maxseconds"
+            type="number"
+            min={0}
+            max={86400}
+            value={payload.source_max_seconds}
+            onChange={(event) =>
+              setPayload({ ...payload, source_max_seconds: Number(event.target.value) })
+            }
             className="mt-2 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3"
           />
         </div>

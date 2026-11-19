@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..models import Clip, Job, Source
+from ..models import Clip, Job, Source, Thumbnail
 from ..schemas.job import CreateJobRequest
 
 
@@ -39,7 +39,10 @@ class JobController:
             "url": str(payload.url),
             "quality_mode": payload.quality_mode,
             "ratio": payload.ratio,
+            "reframe": payload.reframe,
             "source_height": payload.source_height,
+            "source_start_seconds": payload.source_start_seconds,
+            "source_max_seconds": payload.source_max_seconds,
             "clip_count": payload.clip_count,
             "clip_min_seconds": payload.clip_min_seconds,
             "clip_max_seconds": payload.clip_max_seconds,
@@ -88,6 +91,15 @@ class JobController:
                 crf=item["crf"],
             )
             self.db.add(clip)
+            self.db.flush()
+            if item.get("thumbnail_path"):
+                self.db.add(
+                    Thumbnail(
+                        clip_id=clip.id,
+                        path=str(item["thumbnail_path"]),
+                        frame_time=0.0,
+                    )
+                )
         job.status = "succeeded"
         job.progress = 100
         job.finished_at = datetime.now(UTC)

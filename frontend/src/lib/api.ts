@@ -6,7 +6,10 @@ export interface CreateJobPayload {
   url: string;
   quality_mode: QualityMode;
   ratio: string;
+  reframe?: "crop" | "letterbox";
   source_height?: number;
+  source_start_seconds?: number;
+  source_max_seconds?: number;
   clip_count: number;
   burn_captions: boolean;
   generate_thumbnail: boolean;
@@ -69,5 +72,5 @@ export const api = {
   },
   refreshStreamers: (region = "US") =>
     request<Streamer[]>(`/discover/refresh?region=${region}`, { method: "POST" }),
-  mediaUrl: (path: string) => `${API_URL}/media/${path.replace(/^\//, "")}`,
+  mediaUrl: (path: string) => `${API_URL}/${path.replace(/^\/+/, "")}`,
 };

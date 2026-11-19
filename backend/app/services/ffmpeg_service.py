@@ -46,6 +46,45 @@ def extract_audio(source: Path, output: Path) -> Path:
     return output
 
 
+def split_audio(
+    source: Path,
+    output_dir: Path,
+    chunk_seconds: int,
+    overlap: float,
+) -> list[tuple[Path, float]]:
+    """Split long audio into overlapping FLAC chunks.
+
+    Returns a list of (chunk path, start offset in the source). The overlap is
+    appended to each chunk so words on a boundary are not cut in half.
+    """
+    duration = probe(str(source)).duration
+    if duration <= chunk_seconds:
+        return [(source, 0.0)]
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    chunks: list[tuple[Path, float]] = []
+    start = 0.0
+    index = 0
+    while start < duration:
+        length = min(chunk_seconds, duration - start)
+        target = output_dir / f"chunk_{index:04d}.flac"
+        run(
+            [
+                "ffmpeg",
+                "-y",
+                "-ss", f"{start:.3f}",
+                "-i", str(source),
+                "-t", f"{length + overlap:.3f}",
+                "-c:a", "flac",
+                str(target),
+            ]
+        )
+        chunks.append((target, start))
+        start += chunk_seconds
+        index += 1
+    return chunks
+
+
 def extract_frame(source: Path, output: Path, at: float) -> Path:
     output.parent.mkdir(parents=True, exist_ok=True)
     run(
@@ -80,6 +119,7 @@ def render_clip(
     height: int = 1920,
     ass_path: Path | None = None,
     preset: str = "slow",
+    reframe: str = "crop",
 ) -> Path:
     duration = max(end - start, 0.1)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -132,10 +172,27 @@ def render_clip(
     if quality_mode == "balanced":
         preset = "medium"
 
-    filters = [_scale_filter(width, height)]
-    if ass_path is not None:
-        filters.append(f"subtitles={ass_path.as_posix()}")
-    filters.append(f"fps={settings.output_fps}")
+    if reframe == "letterbox":
+        # Keep the full 16:9 game frame (including facecam) over a blurred fill.
+        # No stretching, no lost subject — suited to gaming streams.
+        filters = [
+            "split=2[bg][fg]",
+            f"[bg]scale={width}:{height}:force_original_aspect_ratio=increase,"
+            f"crop={width}:{height},boxblur=24:2[bgs]",
+            f"[fg]scale={width}:-2[fgs]",
+            "[bgs][fgs]overlay=(W-w)/2:(H-h)/2",
+        ]
+        video_filter = ";".join(filters)
+        if ass_path is not None:
+            video_filter += f",subtitles={ass_path.as_posix()}"
+        video_filter += f",fps={settings.output_fps}"
+    else:
+        filters = [_scale_filter(width, height)]
+        if ass_path is not None:
+            filters.append(f"subtitles={ass_path.as_posix()}")
+        filters.append(f"fps={settings.output_fps}")
+        video_filter = ",".join(filters)
+
     audio_filter = f"loudnorm=I={settings.loudness_target}:TP=-1:LRA=11"
 
     run(
@@ -149,7 +206,7 @@ def render_clip(
             "-t",
             f"{duration:.3f}",
             "-vf",
-            ",".join(filters),
+            video_filter,
             "-af",
             audio_filter,
             "-c:v",

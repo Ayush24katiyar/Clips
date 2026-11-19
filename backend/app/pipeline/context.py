@@ -14,7 +14,10 @@ class JobContext:
     url: str
     quality_mode: str = "visually_lossless"
     ratio: str = "9:16"
+    reframe: str = "crop"
     source_height: int = 2160
+    source_start_seconds: int = 0
+    source_max_seconds: int = 0
     clip_count: int = 7
     clip_min_seconds: float = 15.0
     clip_max_seconds: float = 90.0
